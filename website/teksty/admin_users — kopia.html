@@ -1,0 +1,33 @@
+<?php
+//Usuwanie userów z bazy
+if (isset($_POST['del']) and $_POST['check']){
+	var_dump($_POST['check']);
+}
+
+
+$query = mysqli_query($link,"SELECT * FROM users");
+echo('<form action="?strona=admin_users" method="POST">
+		<table style="border:1px solid black;">
+			<tr><th>Wybór</th>
+				<th>User</th>
+				<th>E-mail</th>
+				<th>Typ</th></tr>');
+while ($dana = mysqli_fetch_assoc($query)){
+	if ($dana['type']=='a') $sel='selected'; else $sel='';
+	echo('	<tr><td><input type="checkbox" name="check[]" value="'.$dana['id'].'" /></td>
+				<td>'.$dana['user'].'</td>
+				<td>'.$dana['email'].'</td>
+				<td><select name="type">
+						<option value="u">user</option>
+						<option value="a"'.$sel.' >admin</option>
+					</select></td></tr>');
+}
+echo('		<tr><td colspan="4">
+					<input type="submit" name="del" value="Usuń" />
+					<input type="submit" name="add" value="Dodaj" />
+					<input type="submit" name="edit" value="Edytuj" />
+					<input type="submit" name="save" value="Zapisz" />
+				</td></tr>
+		</table>
+		</form>');
+?>

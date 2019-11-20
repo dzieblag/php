@@ -1,0 +1,119 @@
+<?php
+//Zabezpieczenie przed nieutoryzowanymi userami
+if (!isset($_SESSION['login']) or $_SESSION['user_type']!="a") die("<center><b>Wyp******aj !!!</b></center>");
+
+//Edytowanie userów
+if (isset($_POST['edit_save'])){
+	$ile = count($_POST['id']);
+	for ($i=0;$i<$ile;$i++){
+		$id = $_POST['id'][$i];
+		$user = $_POST['user'][$i];
+		$email = $_POST['email'][$i];
+		$type = $_POST['type'][$i];
+		mysqli_query($link,"UPDATE users SET
+								user='$user',
+								email='$email',
+								type='$type'
+								WHERE id=$id");
+		if (mysqli_errno($link)=='1062'){
+			echo("Użytkownik $user lub e-mail $email już istnieje.<br />");
+		}
+	}
+}
+if (isset($_POST['edit']) and isset($_POST['check'])){
+	echo('<form action="?strona=admin_users" method="POST">
+				<fieldset><legend>Dodawanie użytkowników</legend>');
+	$ile = count($_POST['check']);
+	for ($i=0;$i<$ile;$i++){
+		$id = $_POST['check'][$i];
+		$dana = mysqli_fetch_assoc(mysqli_query($link,"SELECT * FROM users WHERE id=$id"));
+		if ($dana['type']=='a') $sel='selected'; else $sel='';
+		echo('			<input type="hidden" name="id[]" value="'.$dana['id'].'" />
+						<input type="text" name="user[]" value="'.$dana['user'].'" placeholder="User Name" required />
+						<input type="text" name="email[]" value="'.$dana['email'].'" placeholder="Adres e-mail" required />
+						<select name="type[]">
+							<option value="u">user</option>
+							<option value="a" '.$sel.'>admin</option>
+						</select><br />');
+	}
+	echo('				<input type="submit" name="edit_save" value="Zapisz" />
+				</fieldset>
+			</form>');
+
+}
+
+//Zapisanie nowego usera
+if (isset($_POST['user_save'])){
+	$pass = crypt($_POST['pass']);
+	mysqli_query($link,"INSERT INTO users 
+							VALUES ('','$_POST[user]','$pass','$_POST[email]','$_POST[type]')");
+	if (mysqli_errno($link)=='1062'){
+		echo("Użytkownik lub e-mail już istnieje.");
+	}
+}
+if (isset($_POST['add'])){
+	echo('<form action="?strona=admin_users" method="POST">
+				<fieldset><legend>Dodawanie użytkowników</legend>
+					<input type="text" name="user" placeholder="User Name" required />
+					<input type="text" name="email" placeholder="Adres e-mail" required />
+					<input type="text" name="pass" placeholder="Hasło" required />
+					<select name="type">
+						<option value="u">user</option>
+						<option value="a">admin</option>
+					</select>
+					<input type="submit" name="user_save" value="Zapisz" />
+				</fieldset>
+			</form>');
+}
+
+//Usuwanie userów
+if (isset($_POST['del']) and isset($_POST['check'])){
+	$ile = count($_POST['check']);
+	for ($i=0;$i<$ile;$i++){
+		$id = $_POST['check'][$i];
+		mysqli_query($link,"DELETE FROM users WHERE id=$id");
+		//echo("usunięto usera id=$id <br />");
+	}
+}
+//Zapisanie nowych typów
+if (isset($_POST['save_types'])){
+	$ile = count($_POST['type']);
+	$query = mysqli_query($link,"SELECT * FROM users");
+	for ($i=0;$i<$ile;$i++){
+		$dana = mysqli_fetch_assoc($query);
+		if ($dana['type']!=$_POST['type'][$i]){
+			$id = $dana['id'];
+			$type = $_POST['type'][$i];
+			mysqli_query($link,"UPDATE users SET type='$type' WHERE id=$id");
+		}
+	}
+}
+
+$query= mysqli_query($link,"SELECT * FROM users");
+echo('<form action="?strona=admin_users" method="POST">
+		<table style="border:1px solid black;">
+			<tr><th>Wybór</th>
+				<th>User</th>
+				<th>E-mail</th>
+				<th>Typ</th></tr>');
+			
+while($dana = mysqli_fetch_assoc($query)){
+	if ($dana['type']=='a') $sel='selected'; else $sel='';
+	echo('	<tr><td><input type="checkbox" name="check[]" value="'.$dana['id'].'" /></td>
+				<td>'.$dana['user'].'</td>
+				<td>'.$dana['email'].'</td>
+				<td><select name="type[]">
+						<option value="u">user</option>
+						<option value="a" '.$sel.'>admin</option>
+					</select></td></tr>');
+}
+echo('		<tr><td colspan="4">
+						<input type="submit" name="del" value="Usuń" />
+						<input type="submit" name="add" value="Dodaj" />
+						<input type="submit" name="edit" value="Edytuj" />
+						<input type="submit" name="save_types" value="Zapisz nowe typy" />
+				</td></tr>
+		</table></form>');
+//print_r($_SERVER);
+
+?>

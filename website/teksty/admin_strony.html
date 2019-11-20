@@ -1,0 +1,153 @@
+<?php
+//Zabezpieczenie przed nieutoryzowanymi userami
+if (!isset($_SESSION['login']) or $_SESSION['user_type']!="a") die("<center><b>Wyp******aj !!!</b></center>");
+?>
+
+
+<p>Admin panel - strony</p>
+<?php
+if (isset($_GET['na_hasiok'])){
+	if($_GET['type']==p){
+		mysqli_query($link,"DELETE FROM strony WHERE id=$_GET[na_hasiok]");
+	}
+	else if($_GET['type']==c){
+			mysqli_query($link,"DELETE FROM childstrony WHERE id=$_GET[na_hasiok]");
+	}
+}
+
+if (isset($_GET['check']) and isset($_GET['id'])){
+	if($_GET['type']==p){
+		mysqli_query($link,"UPDATE strony SET publikacja=$_GET[check] WHERE id=$_GET[id]");
+	}
+	else if($_GET['type']==c){
+		mysqli_query($link,"UPDATE childstrony SET publikacja=$_GET[check] WHERE id=$_GET[id]");
+	}
+}
+
+//Zapisanie newsa po edycji
+if (isset($_POST['update'])){
+	$time = @date("Y-m-d H:i:s",time());
+	if(isset($_POST['idc'])){
+		mysqli_query($link,"UPDATE childstrony SET tytul='$_POST[temat]', tresc='$_POST[tresc]', data_mod='$time', publikacja='$_POST[on]', parentid='$_POST[idparent]' WHERE id=$_POST[idc]");
+	}
+		else{
+		mysqli_query($link,"UPDATE strony SET tytul='$_POST[temat]', tresc='$_POST[tresc]', data_mod='$time', publikacja='$_POST[on]' WHERE id=$_POST[id]");
+	}
+	if (!mysqli_error($link)){
+		echo("Zaktualizowano stronę.");
+	} else {
+		echo(mysqli_error($link));
+	}
+}
+
+//Zapisanie nowego newsa
+if (isset($_POST['zapisz'])){
+	$tresc = nl2br($_POST['tresc']);
+	if($_POST['idparent']!="none"){
+		mysqli_query($link,"INSERT INTO childstrony (tytul, tresc, publikacja, parentid) VALUES ('$_POST[temat]','$tresc','$_POST[on]','$_POST[idparent]')");
+	}
+	else{
+		mysqli_query($link,"INSERT INTO strony (tytul, tresc, publikacja) VALUES ('$_POST[temat]','$tresc','$_POST[on]')");}
+	if (!mysqli_error($link)){
+		echo("Dodano stronę.");
+	} else {
+		echo(mysqli_error($link));
+	}
+}
+
+if (!isset($_POST['edytuj'])){
+	echo('	<fieldset><legend>Dodawanie news-ów</legend>
+			<form method="POST" action="?strona=admin_strony">
+			<select name="idparent">
+			<option value=none>none</option>');
+				$childids = mysqli_query($link,"Select * from strony");
+				while ($dane = mysqli_fetch_row($childids)){
+					echo "<option value=$dane[0]>$dane[0]</option>";
+				}
+				unset($childids);
+			echo('	</select> <br/>
+			<input type="text" name="temat" placeholder="Nazwa strony" /><br />
+			<textarea id="cle" name="tresc" placeholder="Treść strony."></textarea><br />
+			
+			<input type="checkbox" name="on" value="1" /> - opublikowane<br />
+			<input type="submit" name="zapisz" value="Save-nij te stronę :)" />
+			</form>
+			</fieldset>');
+} else {
+	if(isset($_POST['radioc'])){
+		$dana = mysqli_fetch_assoc(mysqli_query($link,"SELECT * FROM childstrony WHERE id='$_POST[radioc]'"));
+	}
+	else{
+		$dana = mysqli_fetch_assoc(mysqli_query($link,"SELECT * FROM strony WHERE id='$_POST[radio]'"));
+	}
+	if ($dana['publikacja']==1){$ch = ' checked';} else {$ch='';}
+	echo('	<fieldset><legend>Edycja newsa</legend>
+			<form method="POST" action="?strona=admin_strony">');
+			if(isset($_POST['radioc'])){
+				echo '<input type="hidden" name="idc" value="'.$_POST['radioc'].'" />
+					<select name="idparent">
+					<option value=none>none</option>';
+					$childids = mysqli_query($link,"Select * from strony");
+						while ($dane = mysqli_fetch_row($childids)){
+							echo "<option value=$dane[0]>$dane[0]</option>";
+						}
+				echo '</select> <br/>';
+			}
+			else{
+				echo '<input type="hidden" name="id" value="'.$_POST['radio'].'" />'; 
+			}
+			echo('
+			<input type="text" name="temat" placeholder="Nazwa Strony" value="'.$dana['tytul'].'" /><br />
+			<textarea id="cle" name="tresc" placeholder="Treść strony">'.$dana['tresc'].'</textarea><br />');
+			echo('<input type="checkbox" name="on" value="1"'.$ch.' /> - opublikowane<br />
+			<input type="submit" name="update" value="Save-nij tego news-a :)" />
+			</form>
+			</fieldset>');
+
+}
+
+?>
+<fieldset><legend>Wszystkie strony</legend>
+<form method="POST" action="?strona=admin_strony">
+<table border=1>
+	<tr><th>Zazn.</th><th>Tytuł</th><th>Data utw.</th><th>Data ost. mod.</th><th>id</th><th>Publikacja</th></tr>
+<?php
+$query = mysqli_query($link,"SELECT * FROM strony");
+while ($dana = mysqli_fetch_assoc($query)){
+	if ($dana['publikacja']==1){
+		$check = '<a href="?check=0&id='.$dana['id'].'&type=p&strona=admin_strony"><img src="./img/check.png" width="40px" /></a>';
+	} else {
+		$check = '<a href="?check=1&id='.$dana['id'].'&type=p&strona=admin_strony"><img src="./img/uncheck.png" width="40px" /></a>';
+	}
+	$hasiok = '<a href="?na_hasiok='.$dana['id'].'&type=p&strona=admin_strony"><img src="./img/hasiok.png" height="40px" /></a>';
+	echo("<tr><td><input type=\"radio\" name=\"radio\" value=\"$dana[id]\"/></td>
+			<td>$dana[tytul]</td>
+			<td>$dana[data_utw]</td>
+			<td>$dana[data_mod]</td>
+			<td>$dana[id]</td>
+			<td>$check $hasiok</td></tr>");
+}
+?>
+
+<tr><th>Zazn.</th><th>Tytuł</th><th>Data utw.</th><th>Data ost. mod.</th><th>parent id</th><th>Publikacja</th></tr>
+<?php
+$query = mysqli_query($link,"SELECT * FROM childstrony");
+while ($dana = mysqli_fetch_assoc($query)){
+	if ($dana['publikacja']==1){
+		$check = '<a href="?check=0&id='.$dana['id'].'&type=c&strona=admin_strony"><img src="./img/check.png" width="40px" /></a>';
+	} else {
+		$check = '<a href="?check=1&id='.$dana['id'].'&type=c&strona=admin_strony"><img src="./img/uncheck.png" width="40px" /></a>';
+	}
+	$hasiok = '<a href="?na_hasiok='.$dana['id'].'&type=c&strona=admin_strony"><img src="./img/hasiok.png" height="40px" /></a>';
+	echo("<tr><td><input type=\"radio\" name=\"radioc\" value=\"$dana[id]\"/></td>
+			<td>$dana[tytul]</td>
+			<td>$dana[data_utw]</td>
+			<td>$dana[data_mod]</td>
+			<td>$dana[parentid]</td>
+			<td>$check $hasiok</td></tr>");
+}
+?>	
+	<tr><td colspan="6"><input type="submit" name="edytuj" value="Edytuj" /></td></tr>
+</table>
+</form>
+</fieldset>

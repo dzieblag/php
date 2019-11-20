@@ -1,0 +1,63 @@
+Dane kontaktowe<hr />
+<fieldset><legend>Formularz kontaktowy</legend>
+<form action="?strona=kontakt" method="POST" enctype="multipart/form-data">
+<input name="name" type="text" placeholder="Imie nazwisko" required /><br />
+<input name="email" type="email" placeholder="E-mail" required /><br />
+<input name="plik" type="file" /><br />
+<textarea name="tresc" placeholder="Treść wiadomości" required></textarea><br />
+<input type="submit" value="Sendnij wiadomość :)" name="send" />
+</form></fieldset>
+
+<?php
+if (isset($_POST['send'])){
+	require('inc/phpmailer/class.phpmailer.php');
+	require('inc/phpmailer/class.smtp.php');
+	
+	
+	$mail = new PHPMailer;
+	$mail->isSMTP();
+	//Enable SMTP debugging
+	// 0 = off (for production use)
+	// 1 = client messages
+	// 2 = client and server messages
+	$mail->SMTPDebug = 0;
+	$mail->CharSet = 'utf-8';
+	//Ask for HTML-friendly debug output
+	$mail->Debugoutput = 'html';
+	$mail->Host = "smtp.gmail.com";
+	$mail->Port = 587;
+	$mail->SMTPAuth = true;
+	//Username to use for SMTP authentication
+	$mail->Username = "zst_test@zsme.pl";
+	//Password to use for SMTP authentication
+	$mail->Password = "zst1234.";
+	//Set who the message is to be sent from
+	$mail->setFrom('zst_test@zsme.pl', 'No Reply');
+	//Set an alternative reply-to address
+	$mail->addReplyTo($_POST['email'], $_POST['name']);
+	//Set who the message is to be sent to
+	$mail->addAddress('dniesobski@zsme.pl', 'DN');
+	$mail->addAddress('dniesobski@gmail.com', 'DN');
+	//Set the subject line
+	$mail->Subject = 'Wiadomość wysłana automatycznie.';
+	//Read an HTML message body from an external file, convert referenced images to embedded,
+	//convert HTML into a basic plain-text alternative body
+	$mail->msgHTML($_POST['tresc']);
+	//Replace the plain text body with one created manually
+	//$mail->AltBody = 'This is a plain-text message body';
+	//Attach an image file
+	//var_dump($_FILES);
+	if (isset($_FILES['plik']['name'])){
+		$sciezka = $_SERVER['DOCUMENT_ROOT'].'/strona/tmp/'.$_FILES['plik']['name'];
+		move_uploaded_file($_FILES['plik']['tmp_name'], $sciezka);
+		$mail->addAttachment($sciezka);
+	}
+	//send the message, check for errors
+	if (!$mail->send()) {
+		echo "Mailer Error: " . $mail->ErrorInfo;
+	} else {
+		echo "Message sent!";
+		unlink($sciezka);
+	}
+}
+?>

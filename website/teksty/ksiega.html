@@ -1,0 +1,58 @@
+<?php
+	$link = mysqli_connect("127.0.0.1","root","","strona");
+	$query = mysqli_query($link, "select * from ksiega");
+	//cenzura
+	$querycenz = mysqli_query($link,"SELECT * FROM wulgaryzmy");
+	while ($danacenz = mysqli_fetch_assoc($querycenz)){
+		$slowo[] = $danacenz['slowo'];
+		$cenzura[] = $danacenz['cenzura'];
+	}
+	
+	echo "<table border='1'>";
+	echo "<tr>";
+		echo "<td>nick";
+		echo "<td>data";
+		if ($_SESSION['user_type']=="a"){
+			echo "<td>usun";
+		}
+	echo "</tr>";
+	while($dana=mysqli_fetch_array($query)){
+		echo "<tr>";
+			$tresc = str_replace($slowo, $cenzura,$dana[1]);
+			echo "<td>$tresc";
+			echo "<td>$dana[2]";
+			if ($_SESSION['user_type']=="a"){		
+				echo "<td>"; 
+				echo($hasiok = '<a href="?na_hasiok='.$dana[0].'&strona=ksiega">x</a>');
+				echo "</td>";
+			}
+		echo "</tr>";
+	}
+	echo "</table>";
+	echo "Wpisz się: <br/>";
+	echo "<form action='?strona=ksiega' method='post'>";
+	echo "<input type='text' name='nick'>";
+	echo "<input type='submit'>";
+	echo "</form>";
+	if(isset($_POST['nick'])){
+		$nick=$_POST['nick'];
+		$test=true;
+		for($i=0;$i<strlen($nick);$i++){
+			if($nick[$i]=="'" || $nick[$i]=='"' || $nick[$i]=="<" || $nick[$i]==">" || $nick[$i]=="#" || $nick[$i]=="-"){
+				$test=false;					
+			}
+		}
+		if($test!=false){
+			mysqli_query($link, "INSERT INTO `ksiega`(`id`, `nick`) VALUES ('', '$nick');");
+			echo "<meta http-equiv='refresh' content='0'>";		
+		}
+		else{
+			echo "W nicku nie mogą się pojawić znaki \" ' < > - #";
+		}
+	}
+	if(isset($_GET['na_hasiok'])){
+		$hasiok=$_GET['na_hasiok'];
+		mysqli_query($link, "DELETE FROM ksiega WHERE id=$hasiok;");	
+	}
+	
+?>

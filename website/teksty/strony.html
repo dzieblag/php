@@ -1,0 +1,24 @@
+<?php
+if (isset($_GET['id'])){
+	$query = mysqli_query($link,"SELECT * FROM strony WHERE id=$_GET[id] AND publikacja=1");
+	$ile = mysqli_num_rows($query);
+	if ($ile!=0){
+		$dana = mysqli_fetch_assoc($query);
+		echo('<fieldset><legend>'.$dana['tytul'].'</legend>
+				'.$dana['tresc'].'
+				<p style="text-align:right;">');
+		if (!is_null($dana['data_mod'])){
+			echo('Data ostatniej modyfikacji: '.$dana['data_mod']);
+		} else {
+			echo('Data utworzenia: '.$dana['data_utw']);
+	
+		}
+		echo('	</p>
+				</fieldset>');
+	} else {
+		echo('Błędny id.');
+	}
+} else {
+	echo("Brak dostępu.");
+}
+?>

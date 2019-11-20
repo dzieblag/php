@@ -1,0 +1,73 @@
+<?php
+if (isset($_SESSION['login'])){
+	$dis = 'disabled';
+	$autor = $_SESSION['login'];
+	$val = 'value="'.$_SESSION['login'].'" ';
+} else {
+	$dis = '';
+	$val = '';
+}
+//Moderowanie komentarzy
+if (isset($_SESSION['user_type']) and $_SESSION['user_type']=='a'){
+	if (isset($_GET['id'])and is_numeric($_GET['id'])){
+		mysqli_query($link,"UPDATE komentarze SET tresc='Komentarz został usunięty z powodu złamania regulaminu.' WHERE id=$_GET[id]");
+	}
+}
+
+//Dodawanie komentarzy do bazy danych
+if (isset($_POST['koment_send'])){
+	$text = strip_tags($_POST['koment_text'],'<b><u><i>');
+	$text = addslashes($text);
+	if (!isset($_SESSION['login'])){
+		$autor = strip_tags($_POST['koment_autor']);
+		$autor = addslashes($autor);
+	}
+	mysqli_query($link,"INSERT INTO komentarze (id_news, tresc, autor) 
+				VALUES ('$_GET[koment]', '$text', '$autor')");
+}
+
+$query = mysqli_query($link,"SELECT * FROM news WHERE active=1 ORDER BY date DESC");
+if (!isset($_GET['koment'])){
+	while ($dana = mysqli_fetch_assoc($query)){
+		$ile = mysqli_num_rows(mysqli_query($link,"SELECT * FROM komentarze WHERE id_news='$dana[id]'"));
+		echo('	<fieldset style="border-radius:20px;">
+					<legend>'.$dana['temat'].'</legend>
+					<p style="text-align:justify;">'.$dana['tresc'].'</p>
+					<p style="text-align:right;"><i>//<a href="?strona=news&koment='.$dana['id'].'">komentarze ('.$ile.')</a>//Dodano dnia: '.$dana['date'].' przez '.$dana['autor'].'//</i></p>
+				</fieldset>');
+	}
+} else {
+	$query = mysqli_query($link,"SELECT * FROM wulgaryzmy");
+	while ($dana = mysqli_fetch_assoc($query)){
+		$slowo[] = $dana['slowo'];
+		$cenzura[] = $dana['cenzura'];
+	}
+	$dana = mysqli_fetch_assoc(mysqli_query($link,"SELECT * FROM news WHERE id='$_GET[koment]'"));
+	echo('	<fieldset style="border-radius:20px;">
+				<legend>'.$dana['temat'].'</legend>
+				<p style="text-align:justify;">'.$dana['tresc'].'</p>
+				<p style="text-align:right;"><i>//Dodano dnia: '.$dana['date'].' przez '.$dana['autor'].'//</i></p>
+			</fieldset>');
+	//Wyświetlanie komentarzy
+	$query = mysqli_query($link,"SELECT * FROM komentarze WHERE id_news='$_GET[koment]' ORDER BY time DESC");
+	while ($dana = mysqli_fetch_assoc($query)){
+		$tresc = str_replace($slowo, $cenzura,$dana['tresc']);
+		echo('<div style="width:80%; margin:auto;"><p>'.$tresc.'</p>
+				<p style="text-align:right">//Dodano '.$dana['time'].' przez '.$dana['autor'].'//</p></div>');
+		if (isset($_SESSION['user_type']) and $_SESSION['user_type']=='a'){
+			echo('<p><a href="?strona=news&koment='.$_GET['koment'].'&id='.$dana['id'].'">Moderuj</a></p><hr />');
+		}
+	}
+	//Formularz dodawania komentarzy
+	echo('<div style="width:80%; margin:auto;">
+			<form action="?strona=news&koment='.$_GET['koment'].'" method="POST">
+				<textarea style="width:100%;" name="koment_text" placeholder="Treść komentarza" required ></textarea>
+				<input type="text" name="koment_autor" '.$val.'placeholder="Autor" required '.$dis.'/>
+				<input type="submit" name="koment_send" value="Wyślij" />
+			</form>
+		</div>');	
+}
+?>
+
+
+
