@@ -1,0 +1,45 @@
+<?php
+if (isset($_POST['cenzuruj']) and !empty($_POST['slowo'])){
+	$slowo = $_POST['slowo'];
+	$cenzura = $slowo;
+	$polskie = array('ą', 'ę', 'ć', 'ź', 'ż', 'ł', 'ó', 'ń', 'Ą', 'Ę', 'Ć', 'Ź', 'Ż', 'Ł', 'Ó', 'Ń');
+	$zamien = array('a', 'e', 'c', 'z', 'z', 'l', 'o', 'n','A', 'E', 'C', 'Z', 'Z', 'L', 'O', 'N');
+	$cenzura = str_replace($polskie, $zamien, $cenzura);
+	$ile = strlen($cenzura);
+	for ($i=0;$i<$ile;$i++){
+		if ($i!=0 and $i!=$ile-1){
+			$cenzura[$i]='*';
+		}
+	}
+	mysqli_query($link, "INSERT INTO wulgaryzmy (slowo, cenzura) VALUES ('$slowo', '$cenzura')");
+	if (!mysqli_error($link)){
+		echo('Dodano do bazy.');
+	} else {
+		echo(mysqli_error($link));
+	}
+}
+if (isset($_POST['delete'])){
+	$ile = count($_POST['check']);
+	//echo($ile);
+	for ($i=0;$i<$ile;$i++){
+		mysqli_query($link,'DELETE FROM wulgaryzmy WHERE id='.$_POST['check'][$i]);
+		//echo(mysqli_error($link));
+	}
+}
+
+
+$query = mysqli_query($link,"SELECT * FROM wulgaryzmy");
+echo('<form action="?strona=admin_cenzura" method="POST">');
+while ($dana = mysqli_fetch_assoc($query)){
+	echo('	<input type="checkbox" name="check[]" value="'.$dana['id'].'"/> '.$dana['slowo'].' | ');
+}
+echo('	<input type="submit" name="delete" value="Usuń zaznaczone" />
+		</form> ');
+
+
+?>
+<form action="?strona=admin_cenzura" method="POST">
+<input type="text" name="slowo" placeholder="Wpisz tu wulgaryzm do cenzora" />
+<input type="submit" name="cenzuruj" value="Ocenzuruj" />
+
+</form> 

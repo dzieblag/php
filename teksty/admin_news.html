@@ -1,0 +1,88 @@
+<?php
+//Zabezpieczenie przed nieutoryzowanymi userami
+if (!isset($_SESSION['login']) or $_SESSION['user_type']!="a") die("<center><b>Wyp******aj !!!</b></center>");
+?>
+
+
+<p>Admin panel - news</p>
+<?php
+if (isset($_GET['na_hasiok'])){
+	mysqli_query($link,"DELETE FROM news WHERE id=$_GET[na_hasiok]");
+}
+
+if (isset($_GET['check']) and isset($_GET['id'])){
+	mysqli_query($link,"UPDATE news SET active=$_GET[check] WHERE id=$_GET[id]");
+}
+
+//Zapisanie newsa po edycji
+if (isset($_POST['update'])){
+	mysqli_query($link,"UPDATE news SET temat='$_POST[temat]', tresc='$_POST[tresc]', active='$_POST[on]' WHERE id=$_POST[id]");
+	if (!mysqli_error($link)){
+		echo("Zaktualizowano newsa.");
+	} else {
+		echo(mysqli_error($link));
+	}
+}
+
+//Zapisanie nowego newsa
+if (isset($_POST['zapisz'])){
+	$tresc = nl2br($_POST['tresc']);
+	mysqli_query($link,"INSERT INTO news 
+							(temat, tresc, autor, active)
+					VALUES ('$_POST[temat]','$tresc','$_SESSION[login]','$_POST[on]')");
+	if (!mysqli_error($link)){
+		echo("Dodano newsa.");
+	} else {
+		echo(mysqli_error($link));
+	}
+}
+
+if (!isset($_POST['edytuj'])){
+	echo('	<fieldset><legend>Dodawanie news-ów</legend>
+			<form method="POST" action="?strona=admin_news">
+			<input type="text" name="temat" placeholder="Temat news-a" /><br />
+			<textarea id="cle" name="tresc" placeholder="Treść news-a"></textarea><br />
+			<input type="checkbox" name="on" value="1" /> - opublikowane<br />
+			<input type="submit" name="zapisz" value="Save-nij tego news-a :)" />
+			</form>
+			</fieldset>');
+} else {
+	$dana = mysqli_fetch_assoc(mysqli_query($link,"SELECT * FROM news WHERE id='$_POST[radio]'"));
+	if ($dana['active']==1){$ch = ' checked';} else {$ch='';}
+	echo('	<fieldset><legend>Edycja nesa</legend>
+			<form method="POST" action="?strona=admin_news">
+			<input type="hidden" name="id" value="'.$_POST['radio'].'" />
+			<input type="text" name="temat" placeholder="Temat news-a" value="'.$dana['temat'].'" /><br />
+			<textarea id="cle" name="tresc" placeholder="Treść news-a">'.$dana['tresc'].'</textarea><br />
+			<input type="checkbox" name="on" value="1"'.$ch.' /> - opublikowane<br />
+			<input type="submit" name="update" value="Save-nij tego news-a :)" />
+			</form>
+			</fieldset>');
+
+}
+
+?>
+<fieldset><legend>Wszystkie newsy</legend>
+<form method="POST" action="?strona=admin_news">
+<table border=1>
+	<tr><th>Zazn.</th><th>Temat</th><th>Autor</th><th>Data</th><th>Publikacja</th></tr>
+<?php
+$query = mysqli_query($link,"SELECT * FROM news");
+while ($dana = mysqli_fetch_assoc($query)){
+	if ($dana['active']==1){
+		$check = '<a href="?check=0&id='.$dana['id'].'&strona=admin_news"><img src="./img/check.png" width="40px" /></a>';
+	} else {
+		$check = '<a href="?check=1&id='.$dana['id'].'&strona=admin_news"><img src="./img/uncheck.png" width="40px" /></a>';
+	}
+	$hasiok = '<a href="?na_hasiok='.$dana['id'].'&strona=admin_news"><img src="./img/hasiok.png" height="40px" /></a>';
+	echo("<tr><td><input type=\"radio\" name=\"radio\" value=\"$dana[id]\"/></td>
+			<td>$dana[temat]</td>
+			<td>$dana[autor]</td>
+			<td>$dana[date]</td>
+			<td>$check $hasiok</td></tr>");
+}
+?>	
+	<tr><td colspan="5"><input type="submit" name="edytuj" value="Edytuj" /></td></tr>
+</table>
+</form>
+</fieldset>

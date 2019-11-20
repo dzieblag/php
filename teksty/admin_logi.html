@@ -1,0 +1,32 @@
+<?php
+
+$query=mysqli_query($link,"SHOW TABLES LIKE 'log_%'");
+echo('<p>');
+while ($q = mysqli_fetch_array($query)){
+	echo(' | <a href="?strona=admin_logi&tablica='.$q[0].'">'.$q[0].'</a>');
+}
+echo(' |</p>');
+?>
+<fieldset>
+<legend>Logi</legend>
+<?php
+if (isset($_GET['tablica'])){
+	echo('<table style="width:90%;"><tr>');
+	$query=mysqli_query($link,"SHOW COLUMNS FROM $_GET[tablica]");
+	while($q=mysqli_fetch_assoc($query)){
+		echo('<th>'.$q['Field'].'</th>');
+	}
+	echo('</tr>');
+	$query=mysqli_query($link,"SELECT * FROM $_GET[tablica]");
+	while ($q=mysqli_fetch_array($query)){
+		echo('<tr>');
+		$ile = count($q)/2;
+		for ($i=0;$i<$ile;$i++){
+			echo('<td style="border-left:1px grey dotted;border-bottom:1px grey dotted;">'.$q[$i].'</td>');
+		}
+		echo('</tr>');
+	}
+	echo('</table>');
+}
+?>
+</fieldset>
