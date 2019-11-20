@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Czas wygenerowania: 30 Paź 2019, 17:52
--- Wersja serwera: 5.1.41
--- Wersja PHP: 5.3.1
+-- Generation Time: Nov 20, 2019 at 08:27 PM
+-- Server version: 5.1.41
+-- PHP Version: 5.3.1
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -16,13 +16,41 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Baza danych: `strona`
+-- Database: `strona`
 --
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `komentarze`
+-- Table structure for table `childstrony`
+--
+
+CREATE TABLE IF NOT EXISTS `childstrony` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parentid` int(11) NOT NULL,
+  `tytul` varchar(15) NOT NULL,
+  `tresc` text,
+  `data_utw` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_mod` timestamp NULL DEFAULT NULL,
+  `publikacja` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+
+--
+-- Dumping data for table `childstrony`
+--
+
+INSERT INTO `childstrony` (`id`, `parentid`, `tytul`, `tresc`, `data_utw`, `data_mod`, `publikacja`) VALUES
+(1, 7, 'asd', 'asd', '2019-11-18 17:09:34', '2019-11-20 18:25:03', 1),
+(14, 15, 'child', 'child', '2019-11-20 18:25:51', NULL, 1),
+(4, 7, 'zxc', 'asd', '2019-11-20 16:35:15', NULL, 1),
+(12, 13, 'asd', 'zxczcvbzc', '2019-11-20 17:39:33', NULL, 1),
+(13, 15, 'testowy', 'testowy', '2019-11-20 17:44:30', '2019-11-20 20:21:26', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `komentarze`
 --
 
 CREATE TABLE IF NOT EXISTS `komentarze` (
@@ -35,12 +63,12 @@ CREATE TABLE IF NOT EXISTS `komentarze` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=30 ;
 
 --
--- Zrzut danych tabeli `komentarze`
+-- Dumping data for table `komentarze`
 --
 
 INSERT INTO `komentarze` (`id`, `id_news`, `tresc`, `autor`, `time`) VALUES
 (1, 19, 'Komentarz zostaÅ‚ usuniÄ™ty z powodu zÅ‚amania regulaminu.', 'Admin', '2019-10-07 15:33:59'),
-(2, 19, 'test kolejnego komentarza', 'User', '2019-10-07 15:40:11'),
+(2, 19, 'Komentarz zostaÅ‚ usuniÄ™ty z powodu zÅ‚amania regulaminu.', 'User', '2019-10-07 15:40:11'),
 (3, 19, 'Komentarz zostaÅ‚ usuniÄ™ty z powodu zÅ‚amania regulaminu.', 'Admin', '2019-10-07 15:47:39'),
 (4, 18, '.,k gjdflkgj dgjkjfgjg hlkfjlk  jlkjglk jgjkfdj klfdjkl jkhjg kfjskgdj gjkfklg s', 'User', '2019-10-07 15:47:39'),
 (5, 18, 'test', 'test', '2019-10-09 14:44:31'),
@@ -65,7 +93,31 @@ INSERT INTO `komentarze` (`id`, `id_news`, `tresc`, `autor`, `time`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `log_log`
+-- Table structure for table `ksiega`
+--
+
+CREATE TABLE IF NOT EXISTS `ksiega` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nick` text NOT NULL,
+  `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
+
+--
+-- Dumping data for table `ksiega`
+--
+
+INSERT INTO `ksiega` (`id`, `nick`, `data`) VALUES
+(22, 'kurwa', '2019-11-20 15:10:04'),
+(21, 'penis', '2019-11-20 15:09:59'),
+(20, 'zxc', '2019-11-20 15:09:56'),
+(19, 'asd', '2019-11-20 15:09:55'),
+(18, 'test', '2019-11-20 15:09:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `log_log`
 --
 
 CREATE TABLE IF NOT EXISTS `log_log` (
@@ -75,10 +127,10 @@ CREATE TABLE IF NOT EXISTS `log_log` (
   `ip` varchar(15) NOT NULL,
   `akcja` varchar(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=40 ;
 
 --
--- Zrzut danych tabeli `log_log`
+-- Dumping data for table `log_log`
 --
 
 INSERT INTO `log_log` (`id`, `data`, `user`, `ip`, `akcja`) VALUES
@@ -93,12 +145,39 @@ INSERT INTO `log_log` (`id`, `data`, `user`, `ip`, `akcja`) VALUES
 (9, '2019-10-30 17:19:52', 'admin', '192.168.7.42', 'logout'),
 (10, '2019-10-30 17:19:56', 'user', '192.168.7.42', 'login'),
 (11, '2019-10-30 17:19:58', 'user', '192.168.7.42', 'logout'),
-(12, '2019-10-30 17:20:03', 'admin', '192.168.7.42', 'login');
+(12, '2019-10-30 17:20:03', 'admin', '192.168.7.42', 'login'),
+(13, '2019-11-10 11:05:41', 'admin', '::1', 'login'),
+(14, '2019-11-18 17:00:25', 'admin', '::1', 'error'),
+(15, '2019-11-18 17:00:29', 'admin', '::1', 'login'),
+(16, '2019-11-20 14:16:51', 'admin', '::1', 'login'),
+(17, '2019-11-20 14:17:30', 'admin', '::1', 'login'),
+(18, '2019-11-20 14:17:39', 'admin', '::1', 'login'),
+(19, '2019-11-20 14:17:48', 'admin', '::1', 'login'),
+(20, '2019-11-20 14:17:54', 'admin', '::1', 'login'),
+(21, '2019-11-20 14:18:01', 'admin', '::1', 'login'),
+(22, '2019-11-20 14:18:08', 'admin', '::1', 'login'),
+(23, '2019-11-20 14:32:19', 'admin', '::1', 'logout'),
+(24, '2019-11-20 14:32:42', 'admin', '::1', 'login'),
+(25, '2019-11-20 14:57:58', 'admin', '::1', 'logout'),
+(26, '2019-11-20 14:58:02', 'admin', '::1', 'login'),
+(27, '2019-11-20 14:58:15', 'admin', '::1', 'logout'),
+(28, '2019-11-20 14:58:16', 'admin', '::1', 'login'),
+(29, '2019-11-20 15:08:00', 'admin', '::1', 'logout'),
+(30, '2019-11-20 15:10:59', 'admin', '::1', 'login'),
+(31, '2019-11-20 15:11:22', 'admin', '::1', 'login'),
+(32, '2019-11-20 15:11:31', 'admin', '::1', 'login'),
+(33, '2019-11-20 15:11:48', 'admin', '::1', 'login'),
+(34, '2019-11-20 15:11:51', 'admin', '::1', 'login'),
+(35, '2019-11-20 15:12:09', 'admin', '::1', 'login'),
+(36, '2019-11-20 15:12:36', 'admin', '::1', 'login'),
+(37, '2019-11-20 15:13:03', 'admin', '::1', 'login'),
+(38, '2019-11-20 18:27:40', 'admin', '::1', 'logout'),
+(39, '2019-11-20 18:27:47', 'admin', '::1', 'login');
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `news`
+-- Table structure for table `news`
 --
 
 CREATE TABLE IF NOT EXISTS `news` (
@@ -112,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `news` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=20 ;
 
 --
--- Zrzut danych tabeli `news`
+-- Dumping data for table `news`
 --
 
 INSERT INTO `news` (`id`, `temat`, `tresc`, `autor`, `date`, `active`) VALUES
@@ -126,7 +205,7 @@ INSERT INTO `news` (`id`, `temat`, `tresc`, `autor`, `date`, `active`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `stat`
+-- Table structure for table `stat`
 --
 
 CREATE TABLE IF NOT EXISTS `stat` (
@@ -135,19 +214,19 @@ CREATE TABLE IF NOT EXISTS `stat` (
   `time` int(11) NOT NULL,
   `login` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=108 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=118 ;
 
 --
--- Zrzut danych tabeli `stat`
+-- Dumping data for table `stat`
 --
 
 INSERT INTO `stat` (`id`, `ses_id`, `time`, `login`) VALUES
-(107, '3j7avbm9e8cstp657e4c0p8a62', 1572452560, 1);
+(117, '86vf72r0077a7lkenlda3rji91', 1574277967, 1);
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `strony`
+-- Table structure for table `strony`
 --
 
 CREATE TABLE IF NOT EXISTS `strony` (
@@ -158,20 +237,21 @@ CREATE TABLE IF NOT EXISTS `strony` (
   `data_mod` timestamp NULL DEFAULT NULL,
   `publikacja` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
--- Zrzut danych tabeli `strony`
+-- Dumping data for table `strony`
 --
 
 INSERT INTO `strony` (`id`, `tytul`, `tresc`, `data_utw`, `data_mod`, `publikacja`) VALUES
-(7, 'test', 'kjfsdh kfjhkjgf sdkjfkj sdhgkjh fdkjgdh kjhfkj hdkj hsdkjg hkjdfhgkj<br>', '2019-10-23 17:55:44', '2019-10-23 17:59:22', 1),
-(8, 'ddfdfd', '<div>df kkg hgfhgfh g</div><div>fh gfh</div><div>g h</div><div>g hgf h</div><div>ghgfh gh ghgf hgfh <br></div><div><br></div>', '2019-10-23 18:04:30', NULL, 1);
+(7, 'test', 'kjfsdh kfjhkjgf sdkjfkj sdhgkjh fdkjgdh kjhfkj hdkj hsdkjg hkjdfhgkj<br>', '2019-10-23 17:55:44', '2019-11-20 20:21:49', 1),
+(15, 'parent', 'parent', '2019-11-20 18:25:34', NULL, 1),
+(13, 'asd', 'asd', '2019-11-20 17:39:18', NULL, 1);
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE IF NOT EXISTS `users` (
@@ -186,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
--- Zrzut danych tabeli `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id`, `user`, `pass`, `email`, `type`) VALUES
@@ -200,7 +280,7 @@ INSERT INTO `users` (`id`, `user`, `pass`, `email`, `type`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla  `wulgaryzmy`
+-- Table structure for table `wulgaryzmy`
 --
 
 CREATE TABLE IF NOT EXISTS `wulgaryzmy` (
@@ -212,7 +292,7 @@ CREATE TABLE IF NOT EXISTS `wulgaryzmy` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
 
 --
--- Zrzut danych tabeli `wulgaryzmy`
+-- Dumping data for table `wulgaryzmy`
 --
 
 INSERT INTO `wulgaryzmy` (`id`, `slowo`, `cenzura`) VALUES
