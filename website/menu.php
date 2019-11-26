@@ -10,6 +10,7 @@ while ($dana = mysqli_fetch_assoc($query)){
 		echo "<ul>";
 			while ($childdana = mysqli_fetch_assoc($childquery)){
 				echo('<li><div><a href="?strona=childstrony&id='.$childdana['id'].'">'.$childdana['tytul'].'</a></div></li>');
+			}
 			echo "</ul>";
 	}
 		echo "</li>";
