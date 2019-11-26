@@ -1,26 +1,28 @@
 <?php
 	$link = mysqli_connect("127.0.0.1","root","","strona");
 	$query = mysqli_query($link, "select * from ksiega");
-	//cenzura
 	$querycenz = mysqli_query($link,"SELECT * FROM wulgaryzmy");
 	while ($danacenz = mysqli_fetch_assoc($querycenz)){
 		$slowo[] = $danacenz['slowo'];
 		$cenzura[] = $danacenz['cenzura'];
 	}
-	
+	$cenzurasql = array("'", '"', ";", "(", ")", "<", ">");	
 	echo "<table border='1'>";
 	echo "<tr>";
 		echo "<td>nick";
 		echo "<td>data";
+		echo "<td>tresc";
 		if ($_SESSION['user_type']=="a"){
 			echo "<td>usun";
 		}
 	echo "</tr>";
 	while($dana=mysqli_fetch_array($query)){
 		echo "<tr>";
-			$tresc = str_replace($slowo, $cenzura,$dana[1]);
-			echo "<td>$tresc";
-			echo "<td>$dana[2]";
+			$cenz = str_replace($slowo, $cenzura,$dana[1]);
+			echo "<td>$cenz";
+			$cenz2 = str_replace($slowo, $cenzura,$dana[2]);
+			echo "<td>$cenz2";
+			echo "<td>$dana[3]";
 			if ($_SESSION['user_type']=="a"){		
 				echo "<td>"; 
 				echo($hasiok = '<a href="?na_hasiok='.$dana[0].'&strona=ksiega">x</a>');
@@ -28,26 +30,30 @@
 			}
 		echo "</tr>";
 	}
-	echo "</table>";
+	echo "</table>";	
 	echo "Wpisz się: <br/>";
 	echo "<form action='?strona=ksiega' method='post'>";
-	echo "<input type='text' name='nick'>";
+	if (isset($_SESSION['login'])){
+		echo "<input type='hidden' name='nick' value='$_SESSION[login]'>";
+	}
+	else{
+		echo "nick: <input type='text' name='nick'>";
+	}
+	echo "</br><textarea maxlength='100' style='width:203px' name='tresc'>Wpisz tutaj komentarz na temat strony</textarea>";
+	echo "</br>";
 	echo "<input type='submit'>";
 	echo "</form>";
 	if(isset($_POST['nick'])){
-		$nick=$_POST['nick'];
 		$test=true;
-		for($i=0;$i<strlen($nick);$i++){
-			if($nick[$i]=="'" || $nick[$i]=='"' || $nick[$i]=="<" || $nick[$i]==">" || $nick[$i]=="#" || $nick[$i]=="-"){
-				$test=false;					
+		foreach ($cenzurasql as $ce) {
+			if(strpos($_POST['nick'], $ce) !== FALSE || strpos($_POST['tresc'], $ce) !== FALSE || $_POST['nick']=="" || strpos($_POST['nick'], " ")!==false){
+				echo "Użyto niedozwolonego znaku"; 
+				return $test=false;
 			}
 		}
 		if($test!=false){
-			mysqli_query($link, "INSERT INTO `ksiega`(`id`, `nick`) VALUES ('', '$nick');");
+			mysqli_query($link, "INSERT INTO ksiega (`nick`,`tresc`) VALUES ('$_POST[nick]','$_POST[tresc]')");
 			echo "<meta http-equiv='refresh' content='0'>";		
-		}
-		else{
-			echo "W nicku nie mogą się pojawić znaki \" ' < > - #";
 		}
 	}
 	if(isset($_GET['na_hasiok'])){

@@ -85,8 +85,7 @@ if (!isset($_POST['edytuj'])){
 			<form method="POST" action="?strona=admin_strony">');
 			if(isset($_POST['radioc'])){
 				echo '<input type="hidden" name="idc" value="'.$_POST['radioc'].'" />
-					<select name="idparent">
-					<option value=none>none</option>';
+					<select name="idparent">';
 					$childids = mysqli_query($link,"Select * from strony");
 						while ($dane = mysqli_fetch_row($childids)){
 							echo "<option value=$dane[0]>$dane[0]</option>";

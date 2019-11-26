@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 20, 2019 at 08:27 PM
+-- Generation Time: Nov 26, 2019 at 04:14 PM
 -- Server version: 5.1.41
 -- PHP Version: 5.3.1
 
@@ -34,18 +34,16 @@ CREATE TABLE IF NOT EXISTS `childstrony` (
   `data_mod` timestamp NULL DEFAULT NULL,
   `publikacja` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=18 ;
 
 --
 -- Dumping data for table `childstrony`
 --
 
 INSERT INTO `childstrony` (`id`, `parentid`, `tytul`, `tresc`, `data_utw`, `data_mod`, `publikacja`) VALUES
-(1, 7, 'asd', 'asd', '2019-11-18 17:09:34', '2019-11-20 18:25:03', 1),
 (14, 15, 'child', 'child', '2019-11-20 18:25:51', NULL, 1),
-(4, 7, 'zxc', 'asd', '2019-11-20 16:35:15', NULL, 1),
-(12, 13, 'asd', 'zxczcvbzc', '2019-11-20 17:39:33', NULL, 1),
-(13, 15, 'testowy', 'testowy', '2019-11-20 17:44:30', '2019-11-20 20:21:26', 1);
+(15, 16, 'test3', 'test3', '2019-11-22 10:46:56', NULL, 1),
+(13, 7, 'testowy', 'testowy', '2019-11-20 17:44:30', '2019-11-22 10:46:09', 1);
 
 -- --------------------------------------------------------
 
@@ -99,20 +97,24 @@ INSERT INTO `komentarze` (`id`, `id_news`, `tresc`, `autor`, `time`) VALUES
 CREATE TABLE IF NOT EXISTS `ksiega` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nick` text NOT NULL,
+  `tresc` text,
   `data` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=49 ;
 
 --
 -- Dumping data for table `ksiega`
 --
 
-INSERT INTO `ksiega` (`id`, `nick`, `data`) VALUES
-(22, 'kurwa', '2019-11-20 15:10:04'),
-(21, 'penis', '2019-11-20 15:09:59'),
-(20, 'zxc', '2019-11-20 15:09:56'),
-(19, 'asd', '2019-11-20 15:09:55'),
-(18, 'test', '2019-11-20 15:09:53');
+INSERT INTO `ksiega` (`id`, `nick`, `tresc`, `data`) VALUES
+(30, 'admin', 'Wpisz tutaj komentarz na temat strony', '2019-11-25 16:34:20'),
+(31, 'piter', 'gaszka', '2019-11-25 16:39:55'),
+(32, 'Qurwa', 'Qurwa', '2019-11-25 16:41:56'),
+(33, 'admin', 'Qurwa\r\n', '2019-11-25 16:42:12'),
+(34, '??', 'Wpisz tutaj komentarz na temat strony', '2019-11-25 16:46:02'),
+(48, 'zxc', 'Wpisz tutaj komentarz na temat strony', '2019-11-25 17:03:21'),
+(45, 'admin', 'Wpisz tutaj komentarz na temat strony', '2019-11-25 17:00:37'),
+(47, 'admin', 'asdzxdczdas', '2019-11-25 17:02:46');
 
 -- --------------------------------------------------------
 
@@ -127,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `log_log` (
   `ip` varchar(15) NOT NULL,
   `akcja` varchar(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=40 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=56 ;
 
 --
 -- Dumping data for table `log_log`
@@ -172,7 +174,23 @@ INSERT INTO `log_log` (`id`, `data`, `user`, `ip`, `akcja`) VALUES
 (36, '2019-11-20 15:12:36', 'admin', '::1', 'login'),
 (37, '2019-11-20 15:13:03', 'admin', '::1', 'login'),
 (38, '2019-11-20 18:27:40', 'admin', '::1', 'logout'),
-(39, '2019-11-20 18:27:47', 'admin', '::1', 'login');
+(39, '2019-11-20 18:27:47', 'admin', '::1', 'login'),
+(40, '2019-11-20 20:29:24', 'admin', '::1', 'logout'),
+(41, '2019-11-20 20:30:40', 'admin', '::1', 'login'),
+(42, '2019-11-20 20:30:44', 'admin', '::1', 'logout'),
+(43, '2019-11-22 10:42:56', 'admin', '::1', 'login'),
+(44, '2019-11-22 10:43:05', 'admin', '::1', 'logout'),
+(45, '2019-11-22 10:43:31', 'admin', '::1', 'login'),
+(46, '2019-11-25 16:02:48', 'admin', '::1', 'login'),
+(47, '2019-11-25 16:08:01', 'admin', '::1', 'logout'),
+(48, '2019-11-25 16:12:12', 'admin', '::1', 'login'),
+(49, '2019-11-25 16:14:30', 'admin', '::1', 'logout'),
+(50, '2019-11-25 16:31:32', 'admin', '::1', 'login'),
+(51, '2019-11-25 16:42:07', 'admin', '::1', 'login'),
+(52, '2019-11-25 16:45:49', 'admin', '::1', 'logout'),
+(53, '2019-11-25 16:58:26', 'admin', '::1', 'login'),
+(54, '2019-11-25 17:02:48', 'admin', '::1', 'logout'),
+(55, '2019-11-25 17:03:25', 'admin', '::1', 'login');
 
 -- --------------------------------------------------------
 
@@ -214,14 +232,14 @@ CREATE TABLE IF NOT EXISTS `stat` (
   `time` int(11) NOT NULL,
   `login` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=118 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=124 ;
 
 --
 -- Dumping data for table `stat`
 --
 
 INSERT INTO `stat` (`id`, `ses_id`, `time`, `login`) VALUES
-(117, '86vf72r0077a7lkenlda3rji91', 1574277967, 1);
+(123, '86vf72r0077a7lkenlda3rji91', 1574781105, 0);
 
 -- --------------------------------------------------------
 
@@ -237,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `strony` (
   `data_mod` timestamp NULL DEFAULT NULL,
   `publikacja` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
 
 --
 -- Dumping data for table `strony`
